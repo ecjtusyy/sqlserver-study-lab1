@@ -1,0 +1,158 @@
+CREATE TABLE BOOK(
+BookCode char(4) NOT NULL,
+BookName nvarchar(50) NOT NUll,
+Author nvarchar(30) NOT NULL,
+PublisherCode char(2) NOT NULL,
+PublishTime datetime NOT null,
+BookSort nchar(8) NULL,
+ISBN char(17) NULL,
+BookPicture nvarchar(50) null,
+ContenIntro nvarchar(MAX) NULL,
+Price numeric(5,2)  null,
+Discount numeric(3,2) null DEFAULT(1) CHECK(Discount<=1),
+primary key(BookCode)
+)
+
+create table Publisher(
+PublisherCode char(2) not null,
+Publisher nvarchar(40) not null,
+Telephone nvarchar(30) null,
+primary key(PublisherCode)
+)
+
+create table Customer(
+CustomerCode char(4) not null,
+Name nvarchar(16) not null,
+Sex nchar(1) not null check(Sex='男' or Sex='女'),
+Hometown nvarchar(20) null,
+Email nvarchar(40) null,
+Telephone nvarchar(30) not null,
+LoginDate datetime default(getdate()),
+PassWord nvarchar(16) null,
+primary key(CustomerCode)
+)
+
+create table PrivilegeStandard(
+VIPClass char not null default('D') check(VIPClass>='A' AND VIPClass<='D'),
+Discount numeric(3,2) not null default(1) check(Discount<=1)
+primary key(VIPClass)
+)
+
+create table CustomerEvaluation(
+CustomerCode char(4) not null,
+VIPClass char(1) default('D') check(VIPClass>='A' AND VIPClass<='D'),
+EvaluateDate datetime not null default(getdate()),
+primary key(CustomerCode)
+)
+
+create table Order1 (
+OrderCode char(8) not null,
+CustomerCode char(4) not null,
+TotalPrice money null,
+Address nvarchar(50) not null,
+OrderTime dateTime not null default(getdate()),
+OrderStatus nvarchar(6) default('待处理'),
+primary key(OrderCode)
+)
+
+create table OrderDetail(
+OrderCode char(8) not null,
+BookCode char(4) not null,
+Amount int default(0) check(Amount>=0),
+primary key(OrderCode,BookCode)
+)
+
+create table Employee(
+EmployeeCode char(4) not null,
+Name nvarchar(15) not null,
+PassWord nvarchar(16) null,
+IsManager bit not null default(0),
+primary key(EmployeeCode)
+)
+go
+
+alter table BOOK add constraint b1 foreign key (PublisherCode) references Publisher(PublisherCode);
+alter table CustomerEvaluation add constraint b2 foreign key (CustomerCode) references Customer(CustomerCode);
+alter table CustomerEvaluation add constraint b3 foreign key (VIPClass) references PrivilegeStandard(VIPClass);
+alter table Order1 add constraint b4 foreign key (CustomerCode) references Customer(CustomerCode);
+alter table OrderDetail add constraint b5 foreign key (OrderCode) references Order1(OrderCode);
+alter table OrderDetail add constraint b6 foreign key (BookCode) references BOOK(BookCode);
+
+insert Publisher values('01','高等教育出版社','010-24243255');
+insert Publisher values('02','机械工业出版社','010-98643234');
+insert Publisher values('03','电子工业出版社','010-34987644');
+insert Publisher values('10','广州出版社','020-23254365');
+insert Publisher values('11','文化艺术出版社','010-32551515');
+insert Publisher values('12','大众文艺出版社','010-23456433');
+insert Publisher values('13','作家出版社','0451-35325325');
+insert Publisher values('21','上海外语教育出版社','021-35325325');
+insert Publisher values('31','东华大学出版社','021-62378989');
+
+insert BOOK values('0102','大学日语','罗中','21','2009-11-01','外语','780211001',null,Null,32.3,0.8);
+insert BOOK values('0201','计算方法','曹雪麟','02','2008-08-01','数学','769808007',null,Null,'40','0.65');
+insert BOOK values('0202','高等数学','姜洪理','01','2009-11-01','数学','760211001',null,Null,'20','0.6');
+insert BOOK values('0301','飘','玛格丽特·米切尔','13','2000-02-02','文学','729808002',null,Null,'30','0.8');
+insert BOOK values('0305','挪威的森林','村上春树','12','2010-08-01','文学','76808009',null,Null,'37','0.8');
+insert BOOK values('0306','神曲','但丁','10','2010-11-01','文学','780211007',null,Null,'30','0.92');
+insert BOOK values('0504','小兔汤姆','玛丽-阿丽娜·巴文','13','2009-01-01','少儿','720211004',null,'汤姆要上幼儿园','30','0.9');
+insert BOOK values('0602','体育知识通','李强','02','2009-03-10','体育','780211005',null,Null,'24.7','1');
+insert BOOK values('0701','机械原理','王实甫','02','2007-11-01','机械','760211004',null,Null,'20','0.9');
+insert BOOK values('0801','VB程序设计','海宕','01','2010-11-11','计算机','720201001',null,Null,'29','0.5');
+insert BOOK values('0803','信息系统与数据库技术','刘晓强','02','2008-07-10','计算机','729808002',null,Null,'28','0.7');
+
+
+
+insert Customer values('1001','黎念青','男','北京市','lnq@sina.com','23478923','2010-03-09','lnq676789');
+insert Customer values('1202','黄蓉','女','天津市','huangrong@dhu.edu.cn','63478445','2011-01-01','wr121212');
+insert Customer values('1301','梅维锋','男','重庆市','meiwf88@hotmail.com','52346887','2009-08-09','mwf125678');
+insert Customer values('2001','刘一君','男','浙江省杭州市','liuyijun@sina.com','63458929','2011-03-09','lyj787878');
+insert Customer values('2101','周晓宇','男','安徽省合肥市','zhouxiaoyu@163.com','67798825','2009-12-05','zxy123456');
+insert Customer values('2401','刘炎林','男','山东省青岛市','liuyanlin@126.com','63478923','2008-12-03','lyl121212');
+insert Customer values('2801','任炎慈','女','广东省东莞市','ryc@gmail.com','54323923','2007-05-09','ryc889977');
+insert Customer values('4001','郭泉','男','江苏省南京市','guoq@163.com','63655444','2009-12-09','gq67523');
+insert Customer values('4002','杨正栋','男','江苏省无锡市','yangzd@dhu.edu.cn','63478923','2008-09-23','yzd127890');
+
+insert PrivilegeStandard values('A','0.90');
+insert PrivilegeStandard values('B','0.95');
+insert PrivilegeStandard values('C','0.98');
+insert PrivilegeStandard values('D','1');
+
+insert CustomerEvaluation values('1001','C','2011-02-23');
+insert CustomerEvaluation values('1202','C','2011-04-05');
+insert CustomerEvaluation values('1301','A','2010-10-15');
+insert CustomerEvaluation values('2001','C','2011-05-29');
+insert CustomerEvaluation values('2101','D','2011-08-25');
+insert CustomerEvaluation values('2401','C','2010-12-03');
+insert CustomerEvaluation values('2801','B','2011-05-03');
+insert CustomerEvaluation values('4001','A','2011-03-04');
+insert CustomerEvaluation values('4002','B','2011-01-18');
+
+insert Order1 values('08110801','1301',274.50,'北京市亚运村小营东路3号凯基伦大厦','2011-11-08','已发货');
+insert Order1 values('09122101','2801',205.20,'黑龙江省哈尔滨通州区新华大街69号','2011-11-21','已发货');
+insert Order1 values('10021201','4001',241.11,'四川省成都市万丰路小井594号','2011-02-12','已发货');
+insert Order1 values('10060801','2401',25.28,'北京市东门123号','2011-06-08','接单');
+insert Order1 values('10060802','2401',52.92,'江苏省无锡市紫竹桥路90号','2011-11-20','待处理');
+insert Order1 values('10080701','1202',70.56,'天津市万泉庄11号楼','2011-11-22','待处理');
+insert Order1 values('10101401','4002',119.70,'江苏省南京市新街口1000号','2011-10-14','已发货');
+insert Order1 values('10120701','2101',151.09,'上海市天山路99号','2011-11-23','待处理');
+
+insert OrderDetail values('08110801','0202',10);
+insert OrderDetail values('08110801','0801',6);
+insert OrderDetail values('08110801','0803',5);
+insert OrderDetail values('09122101','0504',8);
+insert OrderDetail values('10021201','0305',7);
+insert OrderDetail values('10021201','0602',1);
+insert OrderDetail values('10060801','0701',2);
+insert OrderDetail values('10060802','0701',3);
+insert OrderDetail values('10080701','0301',3);
+insert OrderDetail values('10101401','0401',10);
+insert OrderDetail values('10120701','0102',1);
+insert OrderDetail values('10120701','0201',3);
+insert OrderDetail values('10120701','0306',2);
+
+insert Employee values('1001','张志文','zhang123456',1);
+insert Employee values('1002','王理清','wang121212',0);
+insert Employee values('1003','赵天','zhao343434',0);
+insert Employee values('1004','孙剑民','sun787878',1);
+insert Employee values('1005','秦奇奇','qin898989',0);
+insert Employee values('1006','王梅虎','mei123456',0);
