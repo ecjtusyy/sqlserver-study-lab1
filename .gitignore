@@ -1,3 +1,6 @@
 backup/Study.bak
 __pycache__/
 .vscode/
+
+backup/*.bak
+exports/*.xls
